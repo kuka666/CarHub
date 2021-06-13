@@ -12,7 +12,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
-public class Methods {  //this class contains all the methods that are used in the project
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.activation.*;
+
+
+public class Methods {   //this class contains all the methods that are used in the project
     String URL = "jdbc:postgresql://localhost:5432/Airport";  //connect to database
     String username = "postgres";
     String pass = "dbhec123";
@@ -76,30 +82,6 @@ public class Methods {  //this class contains all the methods that are used in t
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //to login
     public void Login() throws SQLException {  //a method that checks the existence of a given user in the database
         try {
@@ -126,6 +108,50 @@ public class Methods {  //this class contains all the methods that are used in t
             ex.printStackTrace();
         }
     }
+
+
+    //email
+
+    public void mail (String start, String end, String date,int cost, String email) {
+        final String user = "godrengodmou@gmail.com";
+        final String password = "dbhec789";
+        Scanner scam = new Scanner(System.in);
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user, password);
+                    }
+                });
+
+        try {
+            Message sobsh = new MimeMessage(session);
+            sobsh.setFrom(new InternetAddress("godrengodmou@gmail.com"));
+            sobsh.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(email)
+            );
+            sobsh.setSubject("Ticket");
+            sobsh.setText("You buyed a ticket" +
+                    " Your start point " + start +
+                    " Your end point " + end +
+                    " Date:" + date);
+
+            Transport.send(sobsh);
+
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+
+        }
+    }
+
 
 
     public void pay(int cost, String date) throws SQLException {  // method that is called if the flight is only one way and calculates the total price
@@ -462,6 +488,12 @@ public class Methods {  //this class contains all the methods that are used in t
                     }
 
                     System.out.println("ALl equal: " +all); // displaying the price to the user
+                    System.out.println("Write your email");
+                    Scanner scaq = new Scanner(System.in);
+                    String email=scaq.nextLine();
+
+                    mail(start,end,date,flightcost,email);
+                    mail(end,start,cal,flightcost,email);
 
                     break;
                 }
@@ -494,6 +526,11 @@ public class Methods {  //this class contains all the methods that are used in t
                     String fg = res.getString("flightdatehour");
                     pay(cost,date1);      // calculation of the price for the flight
                     quantity(start,end,date,fg);  // decrease in the number of tickets for this flight
+                    Scanner scaq = new Scanner(System.in);
+                    System.out.println("Write your email");
+                    String email=scaq.nextLine();
+
+                    mail(start,end,date,cost,email);
                     break;
                 }
 
@@ -510,9 +547,6 @@ public class Methods {  //this class contains all the methods that are used in t
         }
     }
 
-    public void See() throws SQLException {
-
-    }
 
     public void Inform() throws SQLException {    // a method that enters passenger data into the database
         try {
@@ -561,4 +595,3 @@ public class Methods {  //this class contains all the methods that are used in t
     }
 
 }
-
